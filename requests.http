@@ -1,0 +1,28 @@
+### Listar usuarios
+GET http://localhost:8080/usuarios
+
+### Criar usuario
+POST http://localhost:8080/usuarios
+Content-Type: application/json
+
+{
+  "nome": "Usuario Teste",
+  "email": "usuario.teste@email.com",
+  "senha": "123456"
+}
+
+### Buscar usuario por id
+GET http://localhost:8080/usuarios/1
+
+### Atualizar usuario
+PUT http://localhost:8080/usuarios/1
+Content-Type: application/json
+
+{
+  "nome": "Usuario Atualizado",
+  "email": "usuario.atualizado@email.com",
+  "senha": "654321"
+}
+
+### Deletar usuario
+DELETE http://localhost:8080/usuarios/1
