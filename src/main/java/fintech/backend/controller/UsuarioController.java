@@ -18,7 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
-    // O controller recebe a requisicao HTTP e delega a regra de negocio para o service.
+    // O controller recebe a requisicao HTTP e delega a regra de negocio para o
+    // service.
     private final UsuarioService usuarioService;
 
     public UsuarioController(UsuarioService usuarioService) {
@@ -27,11 +28,13 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<Usuario>> listarTodos() {
+        // Retorna a lista de todos os usuarios cadastrados no banco.
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
+        // Busca um usuario especifico no banco pelo seu id.
         Usuario usuario = usuarioService.buscarPorId(id);
 
         // Quando o id nao existe, a API responde 404 em vez de retornar vazio.
@@ -51,8 +54,10 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario) {
+        // Atualiza os dados do usuario no banco com as novas informacoes.
         Usuario usuarioAtualizado = usuarioService.atualizar(id, usuario);
 
+        // Se nao encontrar o usuario para atualizar, retorna 404.
         if (usuarioAtualizado == null) {
             return ResponseEntity.notFound().build();
         }
@@ -62,6 +67,7 @@ public class UsuarioController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
+        // Deleta o usuario do banco usando o id fornecido.
         boolean deletado = usuarioService.deletar(id);
 
         // Se nao deletou porque nao encontrou o usuario, retorna 404.

@@ -77,13 +77,13 @@ Campos:
 
 ## Endpoints
 
-| Metodo | Rota | Descricao |
-| --- | --- | --- |
-| GET | `/usuarios` | Lista todos os usuarios |
-| GET | `/usuarios/{id}` | Busca um usuario pelo id |
-| POST | `/usuarios` | Cria um novo usuario |
-| PUT | `/usuarios/{id}` | Atualiza um usuario existente |
-| DELETE | `/usuarios/{id}` | Remove um usuario |
+| Metodo | Rota | Descricao | Status esperado |
+| --- | --- | --- | --- |
+| GET | `/usuarios` | Lista todos os usuarios | `200 OK` |
+| GET | `/usuarios/{id}` | Busca um usuario pelo id | `200 OK` ou `404 Not Found` |
+| POST | `/usuarios` | Cria um novo usuario | `201 Created` |
+| PUT | `/usuarios/{id}` | Atualiza um usuario existente | `200 OK` ou `404 Not Found` |
+| DELETE | `/usuarios/{id}` | Remove um usuario | `204 No Content` ou `404 Not Found` |
 
 ## Execucao local
 

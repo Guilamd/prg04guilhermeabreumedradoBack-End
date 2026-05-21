@@ -8,7 +8,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class UsuarioService {
 
-    // O service usa o repository para acessar os dados sem depender direto do controller.
+    // O service usa o repository para acessar os dados sem depender direto do
+    // controller.
     private final UsuarioRepository usuarioRepository;
 
     public UsuarioService(UsuarioRepository usuarioRepository) {
@@ -43,7 +44,8 @@ public class UsuarioService {
     }
 
     public boolean deletar(Long id) {
-        // Antes de deletar, verifica se o usuario existe para evitar erro e retornar 404.
+        // Antes de deletar, verifica se o usuario existe para evitar erro e retornar
+        // 404.
         if (!usuarioRepository.existsById(id)) {
             return false;
         }
