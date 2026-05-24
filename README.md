@@ -23,8 +23,15 @@ src/
         BackendApplication.java
         controller/
           UsuarioController.java
+        dto/
+          ErroResponseDTO.java
+          UsuarioRequestDTO.java
+          UsuarioResponseDTO.java
         entity/
           Usuario.java
+        exception/
+          GlobalExceptionHandler.java
+          UsuarioNaoEncontradoException.java
         repository/
           UsuarioRepository.java
         service/
@@ -63,6 +70,22 @@ O `UsuarioService` centraliza as operacoes relacionadas a usuarios antes de aces
 Camada responsavel por receber as requisicoes HTTP e retornar as respostas da API.
 
 O `UsuarioController` disponibiliza os endpoints REST da entidade `Usuario`.
+
+### `dto`
+
+Contem os objetos usados para entrada e saida de dados da API.
+
+O projeto separa os dados recebidos nas requisicoes dos dados retornados nas respostas:
+
+- `UsuarioRequestDTO`: usado em `POST` e `PUT`.
+- `UsuarioResponseDTO`: usado nas respostas da API.
+- `ErroResponseDTO`: usado para padronizar respostas de erro.
+
+### `exception`
+
+Contem as classes responsaveis pelo tratamento de excecoes da API.
+
+O `GlobalExceptionHandler` centraliza o tratamento dos erros usando as anotacoes do Spring.
 
 ## Entidade inicial
 
@@ -110,6 +133,14 @@ requests.http
 ```
 
 Esse arquivo pode ser executado diretamente pelo IntelliJ, sem necessidade de Postman ou Insomnia.
+
+## DTO, ObjectMapper e excecoes
+
+O projeto utiliza DTOs para evitar que a entidade seja usada diretamente na entrada e saida da API.
+
+As conversoes entre DTOs e entidade sao feitas com `ObjectMapper` na camada de service.
+
+O tratamento de erros foi centralizado com `@RestControllerAdvice` e `@ExceptionHandler`, retornando uma resposta padronizada quando um usuario nao e encontrado.
 
 ## Banco de dados
 

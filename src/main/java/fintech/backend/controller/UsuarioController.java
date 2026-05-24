@@ -1,6 +1,7 @@
 package fintech.backend.controller;
 
-import fintech.backend.entity.Usuario;
+import fintech.backend.dto.UsuarioRequestDTO;
+import fintech.backend.dto.UsuarioResponseDTO;
 import fintech.backend.service.UsuarioService;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -27,54 +28,34 @@ public class UsuarioController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Usuario>> listarTodos() {
+    public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         // Retorna a lista de todos os usuarios cadastrados no banco.
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Usuario> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id) {
         // Busca um usuario especifico no banco pelo seu id.
-        Usuario usuario = usuarioService.buscarPorId(id);
-
-        // Quando o id nao existe, a API responde 404 em vez de retornar vazio.
-        if (usuario == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(usuario);
+        return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario) {
-        Usuario usuarioCriado = usuarioService.criar(usuario);
+    public ResponseEntity<UsuarioResponseDTO> criar(@RequestBody UsuarioRequestDTO usuario) {
+        UsuarioResponseDTO usuarioCriado = usuarioService.criar(usuario);
         // 201 indica que um novo recurso foi criado com sucesso.
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCriado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody Usuario usuario) {
+    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuario) {
         // Atualiza os dados do usuario no banco com as novas informacoes.
-        Usuario usuarioAtualizado = usuarioService.atualizar(id, usuario);
-
-        // Se nao encontrar o usuario para atualizar, retorna 404.
-        if (usuarioAtualizado == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(usuarioAtualizado);
+        return ResponseEntity.ok(usuarioService.atualizar(id, usuario));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         // Deleta o usuario do banco usando o id fornecido.
-        boolean deletado = usuarioService.deletar(id);
-
-        // Se nao deletou porque nao encontrou o usuario, retorna 404.
-        if (!deletado) {
-            return ResponseEntity.notFound().build();
-        }
-
+        usuarioService.deletar(id);
         // 204 indica sucesso sem precisar devolver conteudo no corpo da resposta.
         return ResponseEntity.noContent().build();
     }

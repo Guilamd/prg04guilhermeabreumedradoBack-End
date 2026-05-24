@@ -1,6 +1,10 @@
 package fintech.backend.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import fintech.backend.dto.UsuarioRequestDTO;
+import fintech.backend.dto.UsuarioResponseDTO;
 import fintech.backend.entity.Usuario;
+import fintech.backend.exception.UsuarioNaoEncontradoException;
 import fintech.backend.repository.UsuarioRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -12,45 +16,58 @@ public class UsuarioService {
     // controller.
     private final UsuarioRepository usuarioRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    // O ObjectMapper faz a conversao entre DTO e entidade sem precisar copiar campo por campo.
+    private final ObjectMapper objectMapper;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, ObjectMapper objectMapper) {
         this.usuarioRepository = usuarioRepository;
+        this.objectMapper = objectMapper;
     }
 
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
+    public List<UsuarioResponseDTO> listarTodos() {
+        return usuarioRepository.findAll()
+                .stream()
+                .map(this::converterParaResponseDTO)
+                .toList();
     }
 
-    public Usuario buscarPorId(Long id) {
-        return usuarioRepository.findById(id).orElse(null);
+    public UsuarioResponseDTO buscarPorId(Long id) {
+        Usuario usuario = buscarEntidadePorId(id);
+        return converterParaResponseDTO(usuario);
     }
 
-    public Usuario criar(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+    public UsuarioResponseDTO criar(UsuarioRequestDTO usuarioRequestDTO) {
+        // Converte o DTO recebido na requisicao para a entidade que sera salva no banco.
+        Usuario usuario = objectMapper.convertValue(usuarioRequestDTO, Usuario.class);
+        Usuario usuarioCriado = usuarioRepository.save(usuario);
+
+        return converterParaResponseDTO(usuarioCriado);
     }
 
-    public Usuario atualizar(Long id, Usuario usuarioAtualizado) {
-        Usuario usuario = buscarPorId(id);
-
-        // Se nao encontrar o usuario, o controller vai transformar isso em 404.
-        if (usuario == null) {
-            return null;
-        }
+    public UsuarioResponseDTO atualizar(Long id, UsuarioRequestDTO usuarioAtualizado) {
+        Usuario usuario = buscarEntidadePorId(id);
 
         usuario.setNome(usuarioAtualizado.getNome());
         usuario.setEmail(usuarioAtualizado.getEmail());
         usuario.setSenha(usuarioAtualizado.getSenha());
 
-        return usuarioRepository.save(usuario);
+        Usuario usuarioSalvo = usuarioRepository.save(usuario);
+        return converterParaResponseDTO(usuarioSalvo);
     }
 
-    public boolean deletar(Long id) {
-        // Antes de deletar, verifica se o usuario existe para evitar erro e retornar
-        // 404.
-        if (!usuarioRepository.existsById(id)) {
-            return false;
-        }
+    public void deletar(Long id) {
+        Usuario usuario = buscarEntidadePorId(id);
+        usuarioRepository.delete(usuario);
+    }
 
-        usuarioRepository.deleteById(id);
-        return true;
+    private Usuario buscarEntidadePorId(Long id) {
+        // Se nao encontrar, dispara uma excecao para o handler centralizado tratar.
+        return usuarioRepository.findById(id)
+                .orElseThrow(() -> new UsuarioNaoEncontradoException(id));
+    }
+
+    private UsuarioResponseDTO converterParaResponseDTO(Usuario usuario) {
+        // Converte a entidade para o DTO de resposta, evitando retornar a senha.
+        return objectMapper.convertValue(usuario, UsuarioResponseDTO.class);
     }
 }

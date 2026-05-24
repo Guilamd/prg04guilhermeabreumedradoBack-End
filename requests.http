@@ -26,3 +26,6 @@ Content-Type: application/json
 
 ### Deletar usuario
 DELETE http://localhost:8080/usuarios/1
+
+### Buscar usuario inexistente
+GET http://localhost:8080/usuarios/99
