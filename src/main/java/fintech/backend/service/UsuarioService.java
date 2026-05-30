@@ -8,6 +8,7 @@ import fintech.backend.exception.UsuarioNaoEncontradoException;
 import fintech.backend.repository.UsuarioRepository;
 import java.util.List;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UsuarioService {
@@ -36,6 +37,8 @@ public class UsuarioService {
         return converterParaResponseDTO(usuario);
     }
 
+    // Garante que a criacao do usuario aconteca dentro de uma transacao.
+    @Transactional
     public UsuarioResponseDTO criar(UsuarioRequestDTO usuarioRequestDTO) {
         // Converte o DTO recebido na requisicao para a entidade que sera salva no banco.
         Usuario usuario = objectMapper.convertValue(usuarioRequestDTO, Usuario.class);
@@ -44,6 +47,8 @@ public class UsuarioService {
         return converterParaResponseDTO(usuarioCriado);
     }
 
+    // Garante que a atualizacao do usuario aconteca dentro de uma transacao.
+    @Transactional
     public UsuarioResponseDTO atualizar(Long id, UsuarioRequestDTO usuarioAtualizado) {
         Usuario usuario = buscarEntidadePorId(id);
 
@@ -55,6 +60,8 @@ public class UsuarioService {
         return converterParaResponseDTO(usuarioSalvo);
     }
 
+    // Garante que a exclusao do usuario aconteca dentro de uma transacao.
+    @Transactional
     public void deletar(Long id) {
         Usuario usuario = buscarEntidadePorId(id);
         usuarioRepository.delete(usuario);
@@ -71,3 +78,4 @@ public class UsuarioService {
         return objectMapper.convertValue(usuario, UsuarioResponseDTO.class);
     }
 }
+

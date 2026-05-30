@@ -3,6 +3,7 @@ package fintech.backend.controller;
 import fintech.backend.dto.UsuarioRequestDTO;
 import fintech.backend.dto.UsuarioResponseDTO;
 import fintech.backend.service.UsuarioService;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,14 +41,14 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<UsuarioResponseDTO> criar(@RequestBody UsuarioRequestDTO usuario) {
+    public ResponseEntity<UsuarioResponseDTO> criar(@Valid @RequestBody UsuarioRequestDTO usuario) {
         UsuarioResponseDTO usuarioCriado = usuarioService.criar(usuario);
         // 201 indica que um novo recurso foi criado com sucesso.
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCriado);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id, @RequestBody UsuarioRequestDTO usuario) {
+    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO usuario) {
         // Atualiza os dados do usuario no banco com as novas informacoes.
         return ResponseEntity.ok(usuarioService.atualizar(id, usuario));
     }
@@ -60,3 +61,4 @@ public class UsuarioController {
         return ResponseEntity.noContent().build();
     }
 }
+
