@@ -7,6 +7,8 @@ import fintech.backend.entity.Usuario;
 import fintech.backend.exception.UsuarioNaoEncontradoException;
 import fintech.backend.repository.UsuarioRepository;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,12 @@ public class UsuarioService {
                 .stream()
                 .map(this::converterParaResponseDTO)
                 .toList();
+    }
+
+    public Page<UsuarioResponseDTO> listarTodosPaginado(Pageable pageable) {
+        // Retorna uma pagina de usuarios de acordo com os parametros fornecidos.
+        return usuarioRepository.findAll(pageable)
+                .map(this::converterParaResponseDTO);
     }
 
     public UsuarioResponseDTO buscarPorId(Long id) {

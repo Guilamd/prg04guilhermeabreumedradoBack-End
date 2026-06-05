@@ -5,6 +5,8 @@ import fintech.backend.dto.UsuarioResponseDTO;
 import fintech.backend.service.UsuarioService;
 import jakarta.validation.Valid;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -32,6 +34,13 @@ public class UsuarioController {
     public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
         // Retorna a lista de todos os usuarios cadastrados no banco.
         return ResponseEntity.ok(usuarioService.listarTodos());
+    }
+
+    @GetMapping("/paginado")
+    public ResponseEntity<Page<UsuarioResponseDTO>> listarTodosPaginado(Pageable pageable) {
+        // Retorna uma pagina de usuarios. Parametros: page (0-indexed), size, sort
+        // Exemplos: ?page=0&size=10 ou ?page=0&size=10&sort=nome,desc
+        return ResponseEntity.ok(usuarioService.listarTodosPaginado(pageable));
     }
 
     @GetMapping("/{id}")

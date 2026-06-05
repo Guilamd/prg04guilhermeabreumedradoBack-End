@@ -18,6 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -103,5 +106,24 @@ class UsuarioControllerTest {
     void deveDeletarUsuario() throws Exception {
         mockMvc.perform(delete("/usuarios/1"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void deveListarUsuariosPaginado() throws Exception {
+        List<UsuarioResponseDTO> usuarios = List.of(
+                new UsuarioResponseDTO(1L, "Usuario 1", "usuario1@email.com"),
+                new UsuarioResponseDTO(2L, "Usuario 2", "usuario2@email.com")
+        );
+        Page<UsuarioResponseDTO> pagina = new PageImpl<>(usuarios, PageRequest.of(0, 10), 2);
+
+        when(usuarioService.listarTodosPaginado(any()))
+                .thenReturn(pagina);
+
+        mockMvc.perform(get("/usuarios/paginado?page=0&size=10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].nome").value("Usuario 1"))
+                .andExpect(jsonPath("$.content[1].nome").value("Usuario 2"))
+                .andExpect(jsonPath("$.totalElements").value(2))
+                .andExpect(jsonPath("$.totalPages").value(1));
     }
 }
