@@ -27,7 +27,7 @@ public class PostExternoService {
         return posts != null ? Arrays.asList(posts) : List.of();
     }
 
-    // Busca um post especifico pelo ID.
+    // Busca um post especifico 
     public PostExternoDTO buscarPostPorId(Integer id) {
         return webClient.get()
                 .uri("/posts/{id}", id)

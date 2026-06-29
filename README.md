@@ -2,7 +2,7 @@
 
 Backend inicial de uma aplicacao web FinTech, desenvolvido em Java com Spring Boot.
 
-O projeto foi estruturado em camadas para separar responsabilidades e facilitar a manutencao. Nesta primeira etapa, a entidade implementada e `Usuario`, com endpoints REST para cadastro, listagem, busca, atualizacao e exclusao.
+O projeto foi estruturado em camadas para separar responsabilidades e facilitar a manutencao. Ele possui 4 CRUDs principais ligados entre si: `Usuario`, `Categoria`, `Conta` e `Transacao`.
 
 ## Tecnologias
 
@@ -11,6 +11,7 @@ O projeto foi estruturado em camadas para separar responsabilidades e facilitar 
 - Spring Web
 - Spring Data JPA
 - H2 Database
+- PostgreSQL
 - Maven
 
 ## Estrutura
@@ -23,19 +24,31 @@ src/
         BackendApplication.java
         controller/
           UsuarioController.java
+          CategoriaController.java
+          ContaController.java
+          TransacaoController.java
         dto/
           ErroResponseDTO.java
           UsuarioRequestDTO.java
           UsuarioResponseDTO.java
         entity/
           Usuario.java
+          Categoria.java
+          Conta.java
+          Transacao.java
         exception/
           GlobalExceptionHandler.java
           UsuarioNaoEncontradoException.java
         repository/
           UsuarioRepository.java
+          CategoriaRepository.java
+          ContaRepository.java
+          TransacaoRepository.java
         service/
           UsuarioService.java
+          CategoriaService.java
+          ContaService.java
+          TransacaoService.java
     resources/
       application.properties
   test/
@@ -51,7 +64,12 @@ src/
 
 Contem as entidades do sistema.
 
-Atualmente possui a entidade `Usuario`, que representa os dados de um usuario no banco.
+Possui as entidades principais do dominio financeiro:
+
+- `Usuario`: representa a pessoa que usa o sistema.
+- `Categoria`: classifica os gastos/receitas do usuario.
+- `Conta`: representa uma conta financeira do usuario.
+- `Transacao`: representa uma movimentacao financeira vinculada a uma conta e categoria.
 
 ### `repository`
 
@@ -69,7 +87,7 @@ O `UsuarioService` centraliza as operacoes relacionadas a usuarios antes de aces
 
 Camada responsavel por receber as requisicoes HTTP e retornar as respostas da API.
 
-O `UsuarioController` disponibiliza os endpoints REST da entidade `Usuario`.
+Os controllers disponibilizam os endpoints REST das entidades principais.
 
 ### `dto`
 
@@ -87,7 +105,7 @@ Contem as classes responsaveis pelo tratamento de excecoes da API.
 
 O `GlobalExceptionHandler` centraliza o tratamento dos erros usando as anotacoes do Spring.
 
-## Entidade inicial
+## Entidades principais
 
 ### `Usuario`
 
@@ -96,7 +114,43 @@ Campos:
 - `id`
 - `nome`
 - `email`
-- `senha`
+- `senhaHash`
+- `dataCriacao`
+
+### `Categoria`
+
+Campos:
+
+- `id`
+- `nome`
+- `corHexadecimal`
+- `ativa`
+- `usuario`
+
+### `Conta`
+
+Campos:
+
+- `id`
+- `descricao`
+- `saldoAtual`
+- `ativa`
+- `usuario`
+
+### `Transacao`
+
+Campos:
+
+- `id`
+- `titulo`
+- `valor`
+- `dataHora`
+- `origem`
+- `tipoMovimentacao`
+- `tipoPagamento`
+- `status`
+- `conta`
+- `categoria`
 
 ## Endpoints
 
@@ -107,6 +161,21 @@ Campos:
 | POST | `/usuarios` | Cria um novo usuario | `201 Created` |
 | PUT | `/usuarios/{id}` | Atualiza um usuario existente | `200 OK` ou `404 Not Found` |
 | DELETE | `/usuarios/{id}` | Remove um usuario | `204 No Content` ou `404 Not Found` |
+| GET | `/categorias` | Lista todas as categorias | `200 OK` |
+| GET | `/categorias/{id}` | Busca uma categoria pelo id | `200 OK` ou `404 Not Found` |
+| POST | `/categorias` | Cria uma categoria vinculada a um usuario | `201 Created` |
+| PUT | `/categorias/{id}` | Atualiza uma categoria | `200 OK` ou `404 Not Found` |
+| DELETE | `/categorias/{id}` | Remove uma categoria | `204 No Content` ou `404 Not Found` |
+| GET | `/contas` | Lista todas as contas | `200 OK` |
+| GET | `/contas/{id}` | Busca uma conta pelo id | `200 OK` ou `404 Not Found` |
+| POST | `/contas` | Cria uma conta vinculada a um usuario | `201 Created` |
+| PUT | `/contas/{id}` | Atualiza uma conta | `200 OK` ou `404 Not Found` |
+| DELETE | `/contas/{id}` | Remove uma conta | `204 No Content` ou `404 Not Found` |
+| GET | `/transacoes` | Lista todas as transacoes | `200 OK` |
+| GET | `/transacoes/{id}` | Busca uma transacao pelo id | `200 OK` ou `404 Not Found` |
+| POST | `/transacoes` | Cria uma transacao vinculada a conta e categoria | `201 Created` |
+| PUT | `/transacoes/{id}` | Atualiza uma transacao | `200 OK` ou `404 Not Found` |
+| DELETE | `/transacoes/{id}` | Remove uma transacao | `204 No Content` ou `404 Not Found` |
 
 ## Execucao local
 
@@ -144,10 +213,20 @@ O tratamento de erros foi centralizado com `@RestControllerAdvice` e `@Exception
 
 ## Banco de dados
 
-O projeto utiliza H2 em memoria para facilitar os testes iniciais.
+O projeto utiliza H2 em memoria para facilitar os testes locais e tambem esta preparado para PostgreSQL online, como Neon.
 
 As configuracoes do banco estao em:
 
 ```text
 src/main/resources/application.properties
 ```
+
+Para usar Neon, configure as variaveis de ambiente:
+
+```text
+DB_URL=jdbc:postgresql://HOST/DB?sslmode=require
+DB_USERNAME=USUARIO
+DB_PASSWORD=SENHA
+```
+
+Sem essas variaveis, o projeto continua usando H2 localmente.

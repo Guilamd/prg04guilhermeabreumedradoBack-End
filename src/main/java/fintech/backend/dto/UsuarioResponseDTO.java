@@ -1,6 +1,7 @@
 package fintech.backend.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.LocalDateTime;
 
 // DTO usado para devolver dados do usuario sem expor informacoes sensiveis, como a senha.
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -12,6 +13,8 @@ public class UsuarioResponseDTO {
 
     private String email;
 
+    private LocalDateTime dataCriacao;
+
     public UsuarioResponseDTO() {
     }
 
@@ -19,6 +22,13 @@ public class UsuarioResponseDTO {
         this.id = id;
         this.nome = nome;
         this.email = email;
+    }
+
+    public UsuarioResponseDTO(Long id, String nome, String email, LocalDateTime dataCriacao) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.dataCriacao = dataCriacao;
     }
 
     public Long getId() {
@@ -43,5 +53,13 @@ public class UsuarioResponseDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 }

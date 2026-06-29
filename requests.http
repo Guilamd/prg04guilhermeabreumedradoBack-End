@@ -1,6 +1,3 @@
-### Listar usuarios
-GET http://localhost:8080/usuarios
-
 ### Criar usuario
 POST http://localhost:8080/usuarios
 Content-Type: application/json
@@ -11,21 +8,74 @@ Content-Type: application/json
   "senha": "123456"
 }
 
+### Listar usuarios
+GET http://localhost:8080/usuarios
+
 ### Buscar usuario por id
 GET http://localhost:8080/usuarios/1
 
-### Atualizar usuario
-PUT http://localhost:8080/usuarios/1
+### Criar categoria vinculada ao usuario
+POST http://localhost:8080/categorias
 Content-Type: application/json
 
 {
-  "nome": "Usuario Atualizado",
-  "email": "usuario.atualizado@email.com",
-  "senha": "654321"
+  "nome": "Alimentacao",
+  "corHexadecimal": "#22C55E",
+  "ativa": true,
+  "usuarioId": 1
 }
 
-### Deletar usuario
-DELETE http://localhost:8080/usuarios/1
+### Listar categorias
+GET http://localhost:8080/categorias
 
-### Buscar usuario inexistente
-GET http://localhost:8080/usuarios/99
+### Criar conta vinculada ao usuario
+POST http://localhost:8080/contas
+Content-Type: application/json
+
+{
+  "descricao": "Conta Nubank",
+  "saldoAtual": 1500.75,
+  "ativa": true,
+  "usuarioId": 1
+}
+
+### Listar contas
+GET http://localhost:8080/contas
+
+### Criar transacao vinculada a conta e categoria
+POST http://localhost:8080/transacoes
+Content-Type: application/json
+
+{
+  "titulo": "Mercado",
+  "valor": 87.90,
+  "dataHora": "2026-06-21T18:30:00",
+  "origem": "MANUAL",
+  "tipoMovimentacao": "DESPESA",
+  "tipoPagamento": "PIX",
+  "status": "CONCLUIDA",
+  "contaId": 1,
+  "categoriaId": 1
+}
+
+### Listar transacoes
+GET http://localhost:8080/transacoes
+
+### Atualizar transacao
+PUT http://localhost:8080/transacoes/1
+Content-Type: application/json
+
+{
+  "titulo": "Mercado atualizado",
+  "valor": 95.50,
+  "dataHora": "2026-06-21T19:00:00",
+  "origem": "MANUAL",
+  "tipoMovimentacao": "DESPESA",
+  "tipoPagamento": "CARTAO_DEBITO",
+  "status": "CONCLUIDA",
+  "contaId": 1,
+  "categoriaId": 1
+}
+
+### Deletar transacao
+DELETE http://localhost:8080/transacoes/1

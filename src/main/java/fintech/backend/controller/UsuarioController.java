@@ -32,20 +32,17 @@ public class UsuarioController {
 
     @GetMapping
     public ResponseEntity<List<UsuarioResponseDTO>> listarTodos() {
-        // Retorna a lista de todos os usuarios cadastrados no banco.
         return ResponseEntity.ok(usuarioService.listarTodos());
     }
 
     @GetMapping("/paginado")
     public ResponseEntity<Page<UsuarioResponseDTO>> listarTodosPaginado(Pageable pageable) {
         // Retorna uma pagina de usuarios. Parametros: page (0-indexed), size, sort
-        // Exemplos: ?page=0&size=10 ou ?page=0&size=10&sort=nome,desc
         return ResponseEntity.ok(usuarioService.listarTodosPaginado(pageable));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable Long id) {
-        // Busca um usuario especifico no banco pelo seu id.
         return ResponseEntity.ok(usuarioService.buscarPorId(id));
     }
 
@@ -58,16 +55,13 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO usuario) {
-        // Atualiza os dados do usuario no banco com as novas informacoes.
         return ResponseEntity.ok(usuarioService.atualizar(id, usuario));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        // Deleta o usuario do banco usando o id fornecido.
         usuarioService.deletar(id);
         // 204 indica sucesso sem precisar devolver conteudo no corpo da resposta.
         return ResponseEntity.noContent().build();
     }
 }
-

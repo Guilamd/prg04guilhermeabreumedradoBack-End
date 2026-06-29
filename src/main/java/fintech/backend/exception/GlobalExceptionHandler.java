@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     // Quando um usuario nao e encontrado, a resposta volta padronizada com status 404.
-    @ExceptionHandler(UsuarioNaoEncontradoException.class)
+    @ExceptionHandler({UsuarioNaoEncontradoException.class, RecursoNaoEncontradoException.class})
     public ResponseEntity<ErroResponseDTO> tratarUsuarioNaoEncontrado(
-            UsuarioNaoEncontradoException exception,
+            RuntimeException exception,
             HttpServletRequest request) {
 
         ErroResponseDTO erro = criarErro(
@@ -73,4 +73,3 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now());
     }
 }
-
