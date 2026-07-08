@@ -22,40 +22,87 @@ src/
     java/
       fintech/backend/
         BackendApplication.java
-        controller/
-          UsuarioController.java
-          CategoriaController.java
-          ContaController.java
-          TransacaoController.java
-        dto/
-          ErroResponseDTO.java
-          UsuarioRequestDTO.java
-          UsuarioResponseDTO.java
-        entity/
-          Usuario.java
-          Categoria.java
-          Conta.java
-          Transacao.java
+        config/
+          WebClientConfig.java
         exception/
           GlobalExceptionHandler.java
           UsuarioNaoEncontradoException.java
-        repository/
-          UsuarioRepository.java
-          CategoriaRepository.java
-          ContaRepository.java
-          TransacaoRepository.java
-        service/
-          UsuarioService.java
-          CategoriaService.java
-          ContaService.java
-          TransacaoService.java
+          RecursoNaoEncontradoException.java
+        dto/
+          ErroResponseDTO.java
+        usuario/
+          controller/
+            UsuarioController.java
+          dto/
+            UsuarioRequestDTO.java
+            UsuarioResponseDTO.java
+          entity/
+            Usuario.java
+          repository/
+            UsuarioRepository.java
+          service/
+            UsuarioService.java
+        categoria/
+          controller/
+            CategoriaController.java
+          dto/
+            CategoriaRequestDTO.java
+            CategoriaResponseDTO.java
+          entity/
+            Categoria.java
+          repository/
+            CategoriaRepository.java
+          service/
+            CategoriaService.java
+        conta/
+          controller/
+            ContaController.java
+          dto/
+            ContaRequestDTO.java
+            ContaResponseDTO.java
+          entity/
+            Conta.java
+          repository/
+            ContaRepository.java
+          service/
+            ContaService.java
+        transacao/
+          controller/
+            TransacaoController.java
+          dto/
+            TransacaoRequestDTO.java
+            TransacaoResponseDTO.java
+          entity/
+            Transacao.java
+            OrigemTransacao.java
+            StatusTransacao.java
+            TipoMovimentacao.java
+            TipoPagamento.java
+          repository/
+            TransacaoRepository.java
+          service/
+            TransacaoService.java
+        postexterno/
+          controller/
+            PostExternoController.java
+          dto/
+            PostExternoDTO.java
+          service/
+            PostExternoService.java
     resources/
       application.properties
   test/
     java/
       fintech/backend/
-        controller/
-          UsuarioControllerTest.java
+        usuario/
+          controller/
+            UsuarioControllerTest.java
+        categoria/
+          controller/
+            CategoriaControllerTest.java
+        postexterno/
+          controller/
+            PostExternoControllerTest.java
 ```
 
 ## Divisao em camadas
@@ -99,59 +146,6 @@ O projeto separa os dados recebidos nas requisicoes dos dados retornados nas res
 - `UsuarioResponseDTO`: usado nas respostas da API.
 - `ErroResponseDTO`: usado para padronizar respostas de erro.
 
-### `exception`
-
-Contem as classes responsaveis pelo tratamento de excecoes da API.
-
-O `GlobalExceptionHandler` centraliza o tratamento dos erros usando as anotacoes do Spring.
-
-## Entidades principais
-
-### `Usuario`
-
-Campos:
-
-- `id`
-- `nome`
-- `email`
-- `senhaHash`
-- `dataCriacao`
-
-### `Categoria`
-
-Campos:
-
-- `id`
-- `nome`
-- `corHexadecimal`
-- `ativa`
-- `usuario`
-
-### `Conta`
-
-Campos:
-
-- `id`
-- `descricao`
-- `saldoAtual`
-- `ativa`
-- `usuario`
-
-### `Transacao`
-
-Campos:
-
-- `id`
-- `titulo`
-- `valor`
-- `dataHora`
-- `origem`
-- `tipoMovimentacao`
-- `tipoPagamento`
-- `status`
-- `conta`
-- `categoria`
-
 ## Endpoints
 
 | Metodo | Rota | Descricao | Status esperado |
@@ -177,9 +171,6 @@ Campos:
 | PUT | `/transacoes/{id}` | Atualiza uma transacao | `200 OK` ou `404 Not Found` |
 | DELETE | `/transacoes/{id}` | Remove uma transacao | `204 No Content` ou `404 Not Found` |
 
-## Execucao local
-
-O backend roda localmente na porta `8080`.
 
 URL base da API:
 
@@ -210,23 +201,3 @@ O projeto utiliza DTOs para evitar que a entidade seja usada diretamente na entr
 As conversoes entre DTOs e entidade sao feitas com `ObjectMapper` na camada de service.
 
 O tratamento de erros foi centralizado com `@RestControllerAdvice` e `@ExceptionHandler`, retornando uma resposta padronizada quando um usuario nao e encontrado.
-
-## Banco de dados
-
-O projeto utiliza H2 em memoria para facilitar os testes locais e tambem esta preparado para PostgreSQL online, como Neon.
-
-As configuracoes do banco estao em:
-
-```text
-src/main/resources/application.properties
-```
-
-Para usar Neon, configure as variaveis de ambiente:
-
-```text
-DB_URL=jdbc:postgresql://HOST/DB?sslmode=require
-DB_USERNAME=USUARIO
-DB_PASSWORD=SENHA
-```
-
-Sem essas variaveis, o projeto continua usando H2 localmente.
