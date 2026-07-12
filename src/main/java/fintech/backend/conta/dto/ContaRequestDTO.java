@@ -22,4 +22,6 @@ public class ContaRequestDTO {
 
     @NotNull(message = "O id do usuario e obrigatorio.")
     private Long usuarioId;
+
+    private Long instituicaoFinanceiraId;
 }

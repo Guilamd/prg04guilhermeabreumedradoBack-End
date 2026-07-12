@@ -1,9 +1,13 @@
 package fintech.backend.transacao.controller;
 
+import fintech.backend.transacao.dto.ResumoDashboardDTO;
 import fintech.backend.transacao.dto.TransacaoRequestDTO;
 import fintech.backend.transacao.dto.TransacaoResponseDTO;
 import fintech.backend.transacao.service.TransacaoService;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -27,8 +32,17 @@ public class TransacaoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TransacaoResponseDTO>> listarTodos() {
-        return ResponseEntity.ok(transacaoService.listarTodos());
+    public ResponseEntity<Page<TransacaoResponseDTO>> listar(
+            @RequestParam(required = false) Long contaId,
+            @PageableDefault(size = 20) Pageable pageable) {
+        return ResponseEntity.ok(transacaoService.listar(contaId, pageable));
+    }
+
+    @GetMapping("/resumo")
+    public ResponseEntity<ResumoDashboardDTO> obterResumo(
+            @RequestParam Long contaId,
+            @RequestParam String mesAno) {
+        return ResponseEntity.ok(transacaoService.obterResumo(contaId, mesAno));
     }
 
     @GetMapping("/{id}")

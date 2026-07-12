@@ -1,5 +1,6 @@
 package fintech.backend.conta.entity;
 
+import fintech.backend.instituicaofinanceira.entity.IstituicaoFinanceira;
 import fintech.backend.usuario.entity.Usuario;
 
 import jakarta.persistence.Entity;
@@ -10,9 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "contas")
+@Data
+@NoArgsConstructor
 public class Conta {
 
     @Id
@@ -29,54 +34,17 @@ public class Conta {
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    public Conta() {
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "instituicao_financeira_id")
+    private IstituicaoFinanceira instituicaoFinanceira;
 
-    public Conta(Long id, String descricao, Double saldoAtual, Boolean ativa, Usuario usuario) {
+    public Conta(Long id, String descricao, Double saldoAtual, Boolean ativa, Usuario usuario, IstituicaoFinanceira instituicaoFinanceira) {
         this.id = id;
         this.descricao = descricao;
         this.saldoAtual = saldoAtual;
         this.ativa = ativa;
         this.usuario = usuario;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public Double getSaldoAtual() {
-        return saldoAtual;
-    }
-
-    public void setSaldoAtual(Double saldoAtual) {
-        this.saldoAtual = saldoAtual;
-    }
-
-    public Boolean getAtiva() {
-        return ativa;
-    }
-
-    public void setAtiva(Boolean ativa) {
-        this.ativa = ativa;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+        this.instituicaoFinanceira = instituicaoFinanceira;
     }
 }
+

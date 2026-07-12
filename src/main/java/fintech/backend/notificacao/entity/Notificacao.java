@@ -1,7 +1,7 @@
-package fintech.backend.categoria.entity;
+package fintech.backend.notificacao.entity;
 
+import fintech.backend.metaorcamento.entity.MetaOrcamento;
 import fintech.backend.usuario.entity.Usuario;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,32 +12,38 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "categorias")
+@Table(name = "notificacoes")
 @Data
 @NoArgsConstructor
-public class Categoria {
+public class Notificacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
+    private String mensagem;
 
-    private String corHexadecimal;
+    private LocalDateTime dataEnvio;
 
-    private Boolean ativa;
+    private Boolean lido;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    public Categoria(Long id, String nome, String corHexadecimal, Boolean ativa, Usuario usuario) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "meta_orcamento_id")
+    private MetaOrcamento metaOrcamento;
+
+    public Notificacao(Long id, String mensagem, LocalDateTime dataEnvio, Boolean lido, Usuario usuario, MetaOrcamento metaOrcamento) {
         this.id = id;
-        this.nome = nome;
-        this.corHexadecimal = corHexadecimal;
-        this.ativa = ativa;
+        this.mensagem = mensagem;
+        this.dataEnvio = dataEnvio;
+        this.lido = lido;
         this.usuario = usuario;
+        this.metaOrcamento = metaOrcamento;
     }
 }

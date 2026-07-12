@@ -2,13 +2,18 @@ package fintech.backend.transacao.service;
 
 import fintech.backend.conta.entity.Conta;
 import fintech.backend.categoria.entity.Categoria;
+import fintech.backend.transacao.dto.ResumoDashboardDTO;
 import fintech.backend.transacao.dto.TransacaoRequestDTO;
 import fintech.backend.transacao.dto.TransacaoResponseDTO;
 import fintech.backend.transacao.entity.Transacao;
 import fintech.backend.exception.RecursoNaoEncontradoException;
 import fintech.backend.categoria.repository.CategoriaRepository;
 import fintech.backend.conta.repository.ContaRepository;
+import fintech.backend.fatura.entity.Fatura;
+import fintech.backend.fatura.repository.FaturaRepository;
 import fintech.backend.transacao.repository.TransacaoRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,18 +27,41 @@ public class TransacaoService {
 
     private final CategoriaRepository categoriaRepository;
 
+    private final FaturaRepository faturaRepository;
+
     public TransacaoService(TransacaoRepository transacaoRepository, ContaRepository contaRepository,
-            CategoriaRepository categoriaRepository) {
+            CategoriaRepository categoriaRepository, FaturaRepository faturaRepository) {
         this.transacaoRepository = transacaoRepository;
         this.contaRepository = contaRepository;
         this.categoriaRepository = categoriaRepository;
+        this.faturaRepository = faturaRepository;
     }
 
-    public List<TransacaoResponseDTO> listarTodos() {
-        return transacaoRepository.findAll()
-                .stream()
-                .map(this::converterParaResponseDTO)
-                .toList();
+    public Page<TransacaoResponseDTO> listar(Long contaId, Pageable pageable) {
+        if (contaId != null) {
+            return transacaoRepository.findByContaId(contaId, pageable)
+                    .map(this::converterParaResponseDTO);
+        }
+        return transacaoRepository.findAll(pageable)
+                .map(this::converterParaResponseDTO);
+    }
+
+    public ResumoDashboardDTO obterResumo(Long contaId, String mesAno) {
+        java.time.YearMonth ym = java.time.YearMonth.parse(mesAno);
+        java.time.LocalDateTime inicio = ym.atDay(1).atStartOfDay();
+        java.time.LocalDateTime fim = ym.atEndOfMonth().atTime(23, 59, 59);
+
+        Double receitas = transacaoRepository.somarReceitas(contaId, inicio, fim);
+        Double despesas = transacaoRepository.somarDespesas(contaId, inicio, fim);
+
+        java.util.List<Object[]> resultadosCat = transacaoRepository.agruparGastosPorCategoria(contaId, inicio, fim);
+        java.util.Map<String, Double> gastos = new java.util.HashMap<>();
+        
+        for (Object[] row : resultadosCat) {
+            gastos.put((String) row[0], (Double) row[1]);
+        }
+
+        return new ResumoDashboardDTO(mesAno, contaId, receitas, despesas, gastos);
     }
 
     public TransacaoResponseDTO buscarPorId(Long id) {
@@ -44,6 +72,15 @@ public class TransacaoService {
     public TransacaoResponseDTO criar(TransacaoRequestDTO requestDTO) {
         Transacao transacao = new Transacao();
         preencherTransacao(transacao, requestDTO);
+
+        Conta conta = transacao.getConta();
+        if (transacao.getTipoMovimentacao() == fintech.backend.transacao.entity.TipoMovimentacao.RECEITA) {
+            conta.setSaldoAtual(conta.getSaldoAtual() + transacao.getValor());
+        } else if (transacao.getTipoMovimentacao() == fintech.backend.transacao.entity.TipoMovimentacao.DESPESA) {
+            conta.setSaldoAtual(conta.getSaldoAtual() - transacao.getValor());
+        }
+        contaRepository.save(conta);
+
         return converterParaResponseDTO(transacaoRepository.save(transacao));
     }
 
@@ -57,6 +94,15 @@ public class TransacaoService {
     @Transactional
     public void deletar(Long id) {
         Transacao transacao = buscarEntidadePorId(id);
+
+        Conta conta = transacao.getConta();
+        if (transacao.getTipoMovimentacao() == fintech.backend.transacao.entity.TipoMovimentacao.RECEITA) {
+            conta.setSaldoAtual(conta.getSaldoAtual() - transacao.getValor());
+        } else if (transacao.getTipoMovimentacao() == fintech.backend.transacao.entity.TipoMovimentacao.DESPESA) {
+            conta.setSaldoAtual(conta.getSaldoAtual() + transacao.getValor());
+        }
+        contaRepository.save(conta);
+
         transacaoRepository.delete(transacao);
     }
 
@@ -75,6 +121,14 @@ public class TransacaoService {
         transacao.setStatus(requestDTO.getStatus());
         transacao.setConta(conta);
         transacao.setCategoria(categoria);
+
+        if (requestDTO.getFaturaId() != null) {
+            Fatura fatura = faturaRepository.findById(requestDTO.getFaturaId())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("Fatura", requestDTO.getFaturaId()));
+            transacao.setFatura(fatura);
+        } else {
+            transacao.setFatura(null);
+        }
     }
 
     private Transacao buscarEntidadePorId(Long id) {
@@ -95,6 +149,8 @@ public class TransacaoService {
                 transacao.getConta().getId(),
                 transacao.getConta().getDescricao(),
                 transacao.getCategoria().getId(),
-                transacao.getCategoria().getNome());
+                transacao.getCategoria().getNome(),
+                transacao.getFatura() != null ? transacao.getFatura().getId() : null,
+                transacao.getFatura() != null ? transacao.getFatura().getMesAnoReferencia() : null);
     }
 }

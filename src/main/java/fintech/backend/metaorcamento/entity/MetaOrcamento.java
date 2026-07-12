@@ -1,7 +1,6 @@
-package fintech.backend.categoria.entity;
+package fintech.backend.metaorcamento.entity;
 
-import fintech.backend.usuario.entity.Usuario;
-
+import fintech.backend.categoria.entity.Categoria;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -14,30 +13,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "categorias")
+@Table(name = "metas_orcamento")
 @Data
 @NoArgsConstructor
-public class Categoria {
+public class MetaOrcamento {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nome;
+    private Double valorLimite;
 
-    private String corHexadecimal;
-
-    private Boolean ativa;
+    private String mesAnoReferencia;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id", nullable = false)
-    private Usuario usuario;
+    @JoinColumn(name = "categoria_id", nullable = false)
+    private Categoria categoria;
 
-    public Categoria(Long id, String nome, String corHexadecimal, Boolean ativa, Usuario usuario) {
+    public MetaOrcamento(Long id, Double valorLimite, String mesAnoReferencia, Categoria categoria) {
         this.id = id;
-        this.nome = nome;
-        this.corHexadecimal = corHexadecimal;
-        this.ativa = ativa;
-        this.usuario = usuario;
+        this.valorLimite = valorLimite;
+        this.mesAnoReferencia = mesAnoReferencia;
+        this.categoria = categoria;
     }
 }

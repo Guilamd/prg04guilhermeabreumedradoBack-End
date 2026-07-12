@@ -6,6 +6,8 @@ import fintech.backend.conta.entity.Conta;
 import fintech.backend.exception.RecursoNaoEncontradoException;
 import fintech.backend.exception.UsuarioNaoEncontradoException;
 import fintech.backend.conta.repository.ContaRepository;
+import fintech.backend.instituicaofinanceira.entity.IstituicaoFinanceira;
+import fintech.backend.instituicaofinanceira.repository.IstituicaoFinanceiraRepository;
 import fintech.backend.usuario.entity.Usuario;
 import fintech.backend.usuario.repository.UsuarioRepository;
 import java.util.List;
@@ -19,9 +21,12 @@ public class ContaService {
 
     private final UsuarioRepository usuarioRepository;
 
-    public ContaService(ContaRepository contaRepository, UsuarioRepository usuarioRepository) {
+    private final IstituicaoFinanceiraRepository instituicaoFinanceiraRepository;
+
+    public ContaService(ContaRepository contaRepository, UsuarioRepository usuarioRepository, IstituicaoFinanceiraRepository instituicaoFinanceiraRepository) {
         this.contaRepository = contaRepository;
         this.usuarioRepository = usuarioRepository;
+        this.instituicaoFinanceiraRepository = instituicaoFinanceiraRepository;
     }
 
     public List<ContaResponseDTO> listarTodos() {
@@ -62,6 +67,14 @@ public class ContaService {
         conta.setSaldoAtual(requestDTO.getSaldoAtual());
         conta.setAtiva(requestDTO.getAtiva());
         conta.setUsuario(usuario);
+
+        if (requestDTO.getInstituicaoFinanceiraId() != null) {
+            IstituicaoFinanceira inst = instituicaoFinanceiraRepository.findById(requestDTO.getInstituicaoFinanceiraId())
+                    .orElseThrow(() -> new RecursoNaoEncontradoException("InstituicaoFinanceira", requestDTO.getInstituicaoFinanceiraId()));
+            conta.setInstituicaoFinanceira(inst);
+        } else {
+            conta.setInstituicaoFinanceira(null);
+        }
     }
 
     private Conta buscarEntidadePorId(Long id) {
@@ -75,6 +88,8 @@ public class ContaService {
                 conta.getSaldoAtual(),
                 conta.getAtiva(),
                 conta.getUsuario().getId(),
-                conta.getUsuario().getNome());
+                conta.getUsuario().getNome(),
+                conta.getInstituicaoFinanceira() != null ? conta.getInstituicaoFinanceira().getId() : null,
+                conta.getInstituicaoFinanceira() != null ? conta.getInstituicaoFinanceira().getNomeBanco() : null);
     }
 }

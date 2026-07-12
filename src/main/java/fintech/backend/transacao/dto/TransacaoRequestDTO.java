@@ -43,4 +43,6 @@ public class TransacaoRequestDTO {
 
     @NotNull(message = "O id da categoria e obrigatorio.")
     private Long categoriaId;
+
+    private Long faturaId;
 }
