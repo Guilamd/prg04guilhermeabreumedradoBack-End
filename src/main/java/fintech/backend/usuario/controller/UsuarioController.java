@@ -1,6 +1,7 @@
 package fintech.backend.usuario.controller;
 
 import fintech.backend.usuario.dto.UsuarioRequestDTO;
+import fintech.backend.usuario.dto.UsuarioPerfilRequestDTO;
 import fintech.backend.usuario.dto.UsuarioResponseDTO;
 import fintech.backend.usuario.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -56,6 +57,11 @@ public class UsuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id, @Valid @RequestBody UsuarioRequestDTO usuario) {
         return ResponseEntity.ok(usuarioService.atualizar(id, usuario));
+    }
+
+    @PutMapping("/{id}/perfil")
+    public ResponseEntity<UsuarioResponseDTO> atualizarPerfil(@PathVariable Long id, @Valid @RequestBody UsuarioPerfilRequestDTO usuario) {
+        return ResponseEntity.ok(usuarioService.atualizarPerfil(id, usuario));
     }
 
     @DeleteMapping("/{id}")

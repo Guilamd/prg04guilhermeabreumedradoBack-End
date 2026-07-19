@@ -18,16 +18,14 @@ public class MetaOrcamentoService {
 
     private final CategoriaRepository categoriaRepository;
 
-    public MetaOrcamentoService(MetaOrcamentoRepository metaOrcamentoRepository, CategoriaRepository categoriaRepository) {
+    public MetaOrcamentoService(MetaOrcamentoRepository metaOrcamentoRepository,
+            CategoriaRepository categoriaRepository) {
         this.metaOrcamentoRepository = metaOrcamentoRepository;
         this.categoriaRepository = categoriaRepository;
     }
 
     public List<MetaOrcamentoResponseDTO> listarTodos() {
-        return metaOrcamentoRepository.findAll()
-                .stream()
-                .map(this::converterParaResponseDTO)
-                .toList();
+        return metaOrcamentoRepository.findAll().stream().map(this::converterParaResponseDTO).toList();
     }
 
     public MetaOrcamentoResponseDTO buscarPorId(Long id) {
@@ -74,7 +72,6 @@ public class MetaOrcamentoService {
                 metaOrcamento.getValorLimite(),
                 metaOrcamento.getMesAnoReferencia(),
                 metaOrcamento.getCategoria().getId(),
-                metaOrcamento.getCategoria().getNome()
-        );
+                metaOrcamento.getCategoria().getNome());
     }
 }

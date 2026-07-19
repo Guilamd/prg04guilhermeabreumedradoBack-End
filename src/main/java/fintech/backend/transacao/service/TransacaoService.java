@@ -39,11 +39,9 @@ public class TransacaoService {
 
     public Page<TransacaoResponseDTO> listar(Long contaId, Pageable pageable) {
         if (contaId != null) {
-            return transacaoRepository.findByContaId(contaId, pageable)
-                    .map(this::converterParaResponseDTO);
+            return transacaoRepository.findByContaId(contaId, pageable).map(this::converterParaResponseDTO);
         }
-        return transacaoRepository.findAll(pageable)
-                .map(this::converterParaResponseDTO);
+        return transacaoRepository.findAll(pageable).map(this::converterParaResponseDTO);
     }
 
     public ResumoDashboardDTO obterResumo(Long contaId, String mesAno) {
@@ -56,7 +54,7 @@ public class TransacaoService {
 
         java.util.List<Object[]> resultadosCat = transacaoRepository.agruparGastosPorCategoria(contaId, inicio, fim);
         java.util.Map<String, Double> gastos = new java.util.HashMap<>();
-        
+
         for (Object[] row : resultadosCat) {
             gastos.put((String) row[0], (Double) row[1]);
         }
@@ -106,7 +104,7 @@ public class TransacaoService {
         transacaoRepository.delete(transacao);
     }
 
-        private void preencherTransacao(Transacao transacao, TransacaoRequestDTO requestDTO) {
+    private void preencherTransacao(Transacao transacao, TransacaoRequestDTO requestDTO) {
         Conta conta = contaRepository.findById(requestDTO.getContaId())
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Conta", requestDTO.getContaId()));
         Categoria categoria = categoriaRepository.findById(requestDTO.getCategoriaId())
@@ -132,8 +130,7 @@ public class TransacaoService {
     }
 
     private Transacao buscarEntidadePorId(Long id) {
-        return transacaoRepository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException("Transacao", id));
+        return transacaoRepository.findById(id).orElseThrow(() -> new RecursoNaoEncontradoException("Transacao", id));
     }
 
     private TransacaoResponseDTO converterParaResponseDTO(Transacao transacao) {
