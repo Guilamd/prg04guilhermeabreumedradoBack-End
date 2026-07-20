@@ -66,7 +66,7 @@ public class DataSeeder {
 
             Conta cartao1 = new Conta();
             cartao1.setDescricao("Cartão Mercado Pago");
-            cartao1.setSaldoAtual(0.0);
+            cartao1.setSaldoAtual(2850.75);
             cartao1.setAtiva(true);
             cartao1.setUsuario(usuario);
             contaRepository.save(cartao1);
