@@ -17,4 +17,6 @@ public class UsuarioPerfilRequestDTO {
     @NotBlank(message = "O email é obrigatório.")
     @Email(message = "O email deve ter um formato válido.")
     private String email;
+
+    private String image;
 }

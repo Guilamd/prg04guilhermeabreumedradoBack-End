@@ -19,16 +19,19 @@ public class UsuarioResponseDTO {
 
     private LocalDateTime dataCriacao;
 
+    private String image;
+
     public UsuarioResponseDTO(Long id, String nome, String email) {
         this.id = id;
         this.nome = nome;
         this.email = email;
     }
 
-    public UsuarioResponseDTO(Long id, String nome, String email, LocalDateTime dataCriacao) {
+    public UsuarioResponseDTO(Long id, String nome, String email, LocalDateTime dataCriacao, String image) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.dataCriacao = dataCriacao;
+        this.image = image;
     }
 }

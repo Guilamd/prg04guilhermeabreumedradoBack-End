@@ -6,6 +6,7 @@ import fintech.backend.usuario.dto.UsuarioResponseDTO;
 import fintech.backend.usuario.entity.Usuario;
 import fintech.backend.exception.UsuarioNaoEncontradoException;
 import fintech.backend.usuario.repository.UsuarioRepository;
+import org.mindrot.jbcrypt.BCrypt;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,8 +44,8 @@ public class UsuarioService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("E-mail ou senha inválidos"));
 
-        // Comparação simples (já que as senhas não estão sendo criptografadas com BCrypt no momento)
-        if (!usuario.getSenhaHash().equals(senha)) {
+        // Validação da senha com BCrypt
+        if (!BCrypt.checkpw(senha, usuario.getSenhaHash())) {
             throw new RuntimeException("E-mail ou senha inválidos");
         }
 
@@ -57,7 +58,10 @@ public class UsuarioService {
         Usuario usuario = new Usuario();
         usuario.setNome(usuarioRequestDTO.getNome());
         usuario.setEmail(usuarioRequestDTO.getEmail());
-        usuario.setSenhaHash(usuarioRequestDTO.getSenha());
+        
+        // Gerar o Hash da senha com salt
+        String hash = BCrypt.hashpw(usuarioRequestDTO.getSenha(), BCrypt.gensalt());
+        usuario.setSenhaHash(hash);
 
         Usuario usuarioCriado = usuarioRepository.save(usuario);
 
@@ -70,7 +74,12 @@ public class UsuarioService {
 
         usuario.setNome(usuarioAtualizado.getNome());
         usuario.setEmail(usuarioAtualizado.getEmail());
-        usuario.setSenhaHash(usuarioAtualizado.getSenha());
+        
+        // Se a senha foi enviada, criptografá-la antes de salvar
+        if (usuarioAtualizado.getSenha() != null && !usuarioAtualizado.getSenha().trim().isEmpty()) {
+            String hash = BCrypt.hashpw(usuarioAtualizado.getSenha(), BCrypt.gensalt());
+            usuario.setSenhaHash(hash);
+        }
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
         return converterParaResponseDTO(usuarioSalvo);
@@ -82,6 +91,9 @@ public class UsuarioService {
 
         usuario.setNome(perfilAtualizado.getNome());
         usuario.setEmail(perfilAtualizado.getEmail());
+        if (perfilAtualizado.getImage() != null) {
+            usuario.setImage(perfilAtualizado.getImage());
+        }
 
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
         return converterParaResponseDTO(usuarioSalvo);
@@ -103,6 +115,7 @@ public class UsuarioService {
                 usuario.getId(),
                 usuario.getNome(),
                 usuario.getEmail(),
-                usuario.getDataCriacao());
+                usuario.getDataCriacao(),
+                usuario.getImage());
     }
 }

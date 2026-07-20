@@ -68,6 +68,20 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Suporte para variáveis de ambiente via arquivo .env -->
+        <dependency>
+            <groupId>me.paulschwarz</groupId>
+            <artifactId>spring-dotenv</artifactId>
+            <version>4.0.0</version>
+        </dependency>
+
+        <!-- Biblioteca leve para criptografia de senhas (BCrypt) -->
+        <dependency>
+            <groupId>org.mindrot</groupId>
+            <artifactId>jbcrypt</artifactId>
+            <version>0.4</version>
+        </dependency>
+
         <!-- Swagger UI para documentação da API -->
         <dependency>
             <groupId>org.springdoc</groupId>

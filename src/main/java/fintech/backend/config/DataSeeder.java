@@ -14,6 +14,7 @@ import fintech.backend.transacao.entity.StatusTransacao;
 import fintech.backend.transacao.repository.TransacaoRepository;
 import fintech.backend.metaorcamento.entity.MetaOrcamento;
 import fintech.backend.metaorcamento.repository.MetaOrcamentoRepository;
+import org.mindrot.jbcrypt.BCrypt;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -33,7 +34,13 @@ public class DataSeeder {
                                    MetaOrcamentoRepository metaOrcamentoRepository) {
         return args -> {
             
-            // Limpa tudo para garantir um banco novo toda vez que reiniciar
+            // Verifica se já existem dados no banco para não apagar o que o usuário cadastrou manualmente
+            if (usuarioRepository.count() > 0) {
+                System.out.println("Banco de dados já possui registros. DataSeeder ignorado.");
+                return;
+            }
+
+            // Limpa tudo caso seja um ambiente zerado (evita falhas de integridade ao semear)
             transacaoRepository.deleteAll();
             metaOrcamentoRepository.deleteAll();
             contaRepository.deleteAll();
@@ -44,13 +51,13 @@ public class DataSeeder {
             Usuario u1 = new Usuario();
             u1.setNome("Usuário Teste");
             u1.setEmail("user@fintech.com");
-            u1.setSenhaHash("1234");
+            u1.setSenhaHash(BCrypt.hashpw("1234", BCrypt.gensalt()));
             usuarioRepository.save(u1);
 
             Usuario u2 = new Usuario();
             u2.setNome("Administrador");
             u2.setEmail("admin@fintech.com");
-            u2.setSenhaHash("1234");
+            u2.setSenhaHash(BCrypt.hashpw("1234", BCrypt.gensalt()));
             usuarioRepository.save(u2);
 
             Usuario usuario = usuarioRepository.findByEmail("user@fintech.com").orElse(null);

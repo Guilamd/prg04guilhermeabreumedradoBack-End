@@ -7,3 +7,4 @@ mvnw.cmd
 
 # Ignorar o arquivo local com a senha do banco
 application-local.properties
+.env

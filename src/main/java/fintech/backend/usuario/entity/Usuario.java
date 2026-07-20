@@ -27,15 +27,19 @@ public class Usuario {
 
     private String senhaHash;
 
+    @Column(columnDefinition = "TEXT")
+    private String image;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
 
-    public Usuario(Long id, String nome, String email, String senhaHash, LocalDateTime dataCriacao) {
+    public Usuario(Long id, String nome, String email, String senhaHash, LocalDateTime dataCriacao, String image) {
         this.id = id;
         this.nome = nome;
         this.email = email;
         this.senhaHash = senhaHash;
         this.dataCriacao = dataCriacao;
+        this.image = image;
     }
 
     @PrePersist
